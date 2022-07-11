@@ -3,13 +3,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.agos.ddamise2022">
     <!-- internet access -->
-    <uses-permission android:name="android.permission.INTERNET" /> <!-- location access -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- location access -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" /> <!-- google maps services -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <!-- google maps services -->
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
     <uses-permission android:name="com.agos.ddamise2022.MAPS_RECEIVE" />
 
+    <!-- gps -->
     <uses-feature
         android:name="android.hardware.location.gps"
         android:required="true" />
@@ -25,6 +28,7 @@
         android:theme="@style/Theme.Ddamise2022"
         tools:targetApi="31">
 
+        <!-- environment vars -->
         <meta-data
             android:name="com.agos.ddamise2022.ENVIRONMENT"
             android:value="${environment}" />
@@ -36,11 +40,14 @@
             android:value="${locationUpdateTime}" />
         <meta-data
             android:name="com.agos.ddamise2022.LOCATIONUPDATEDISTANCE"
-            android:value="${locationUpdateDistance}" /> <!-- Google Play Services -->
+            android:value="${locationUpdateDistance}" />
+
+        <!-- Google Play Services -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_map_key" />
 
+        <!-- activities -->
         <activity
             android:name=".ui.ASplash"
             android:exported="true"
