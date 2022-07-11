@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "706826846888",
+    "firebase_url": "https://ddamise2022-default-rtdb.firebaseio.com",
+    "project_id": "ddamise2022",
+    "storage_bucket": "ddamise2022.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:706826846888:android:4f706b2cc1f29d2566789d",
+        "android_client_info": {
+          "package_name": "com.agos.ddamise2022"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "706826846888-kdack1s225mmf4vpr5ehj36lsgritqah.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAws9jYGW0u4IHDwyJ52ydIFkH6p1zTG1E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "706826846888-kdack1s225mmf4vpr5ehj36lsgritqah.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
