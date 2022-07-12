@@ -8,12 +8,20 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:706826846888:android:4f706b2cc1f29d2566789d",
+        "mobilesdk_app_id": "1:706826846888:android:90530314b043488266789d",
         "android_client_info": {
           "package_name": "com.agos.ddamise2022"
         }
       },
       "oauth_client": [
+        {
+          "client_id": "706826846888-kpfh5da67fujm3k1bs3e9ma4fbniim7p.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.agos.ddamise2022",
+            "certificate_hash": "5515e41c1c2a960231257244ed2eced7214ce8ff"
+          }
+        },
         {
           "client_id": "706826846888-kdack1s225mmf4vpr5ehj36lsgritqah.apps.googleusercontent.com",
           "client_type": 3
@@ -21,7 +29,7 @@
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAws9jYGW0u4IHDwyJ52ydIFkH6p1zTG1E"
+          "current_key": "AIzaSyAd_ITLZLLyed75w4dh_M29b0mkfp7Gx1I"
         }
       ],
       "services": {
