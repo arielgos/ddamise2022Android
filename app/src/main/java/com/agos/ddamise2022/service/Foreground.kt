@@ -75,7 +75,6 @@ class Foreground : Service() {
         locationRequest = LocationRequest.create()
         locationRequest!!.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         locationRequest!!.interval = (configuration.locationUpdateTime * 1000).toLong()
-        //locationRequest!!.smallestDisplacement = configuration.locationUpdateDistance.toFloat()
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this@Foreground)
         fusedLocationProviderClient!!.requestLocationUpdates(locationRequest!!, locationCallback as LocationCallback, Looper.getMainLooper())
         return START_NOT_STICKY

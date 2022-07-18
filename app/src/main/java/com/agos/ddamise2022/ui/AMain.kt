@@ -1,5 +1,7 @@
 package com.agos.ddamise2022.ui
 
+import android.app.ActivityManager
+import android.app.ActivityManager.RunningAppProcessInfo
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -14,11 +16,28 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.agos.ddamise2022.Configuration
 import com.agos.ddamise2022.R
 import com.agos.ddamise2022.model.Location
+import com.agos.ddamise2022.model.User
 import com.agos.ddamise2022.service.Foreground
+import com.agos.ddamise2022.service.ServiceHub
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.material.textfield.TextInputEditText
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import java.security.SecureRandom
+import java.security.cert.X509Certificate
+import javax.net.ssl.SSLContext
+import javax.net.ssl.SSLSocketFactory
+import javax.net.ssl.TrustManager
+import javax.net.ssl.X509TrustManager
+import javax.security.cert.CertificateException
 
 
 class AMain : AppCompatActivity() {
@@ -29,6 +48,10 @@ class AMain : AppCompatActivity() {
     private var myLocation: Location? = null
 
     lateinit var mapFragment: SupportMapFragment
+
+    private var retrofit: Retrofit? = null
+
+    lateinit var userName: TextInputEditText
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,6 +68,53 @@ class AMain : AppCompatActivity() {
                 MarkerOptions()
                     .position(LatLng(0.0, 0.0))
             )
+        }
+
+        userName = findViewById(R.id.username)
+
+        /**
+         * Retrofit
+         */
+        val loggingInterceptor = HttpLoggingInterceptor()
+        loggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
+
+        val okHttpClient = unsafeOkHttpClient()?.addInterceptor(loggingInterceptor)?.build()
+
+        retrofit = Retrofit.Builder()
+            .baseUrl(configuration.urlBase)
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
+
+    private fun unsafeOkHttpClient(): OkHttpClient.Builder? {
+        return try {
+            val trustAllCerts: Array<TrustManager> = arrayOf(
+                object : X509TrustManager {
+                    @Throws(CertificateException::class)
+                    override fun checkClientTrusted(chain: Array<X509Certificate?>?, authType: String?) {
+                    }
+
+                    @Throws(CertificateException::class)
+                    override fun checkServerTrusted(chain: Array<X509Certificate?>?, authType: String?) {
+                    }
+
+                    override fun getAcceptedIssuers(): Array<X509Certificate> {
+                        return arrayOf()
+                    }
+                }
+            )
+
+            val sslContext: SSLContext = SSLContext.getInstance("SSL")
+            sslContext.init(null, trustAllCerts, SecureRandom())
+
+            val sslSocketFactory: SSLSocketFactory = sslContext.getSocketFactory()
+            val builder = OkHttpClient.Builder()
+            builder.sslSocketFactory(sslSocketFactory, trustAllCerts[0] as X509TrustManager)
+            builder.hostnameVerifier { _, _ -> true }
+            builder
+        } catch (e: Exception) {
+            throw RuntimeException(e)
         }
     }
 
@@ -81,12 +151,14 @@ class AMain : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        LocalBroadcastManager.getInstance(applicationContext)
-            .registerReceiver(messageReceiver, IntentFilter(Configuration.tag))
-        if (serviceIntent == null) {
-            serviceIntent = Intent(applicationContext, Foreground::class.java)
+        if (isAppOnForeground(applicationContext)) {
+            LocalBroadcastManager.getInstance(applicationContext)
+                .registerReceiver(messageReceiver, IntentFilter(Configuration.tag))
+            if (serviceIntent == null) {
+                serviceIntent = Intent(applicationContext, Foreground::class.java)
+            }
+            ContextCompat.startForegroundService(applicationContext, serviceIntent!!)
         }
-        ContextCompat.startForegroundService(applicationContext, serviceIntent!!)
     }
 
     override fun onPause() {
@@ -96,6 +168,18 @@ class AMain : AppCompatActivity() {
         if (serviceIntent != null) {
             stopService(serviceIntent)
         }
+    }
+
+    private fun isAppOnForeground(context: Context): Boolean {
+        val activityManager = context.getSystemService(ACTIVITY_SERVICE) as ActivityManager
+        val appProcesses = activityManager.runningAppProcesses ?: return false
+        val packageName = context.packageName
+        for (appProcess in appProcesses) {
+            if (appProcess.importance == RunningAppProcessInfo.IMPORTANCE_FOREGROUND && appProcess.processName == packageName) {
+                return true
+            }
+        }
+        return false
     }
 
     private val messageReceiver: BroadcastReceiver = object : BroadcastReceiver() {
@@ -122,7 +206,29 @@ class AMain : AppCompatActivity() {
                     it.moveCamera(CameraUpdateFactory.newLatLngZoom(myLatLng, configuration.defaultZoom))
                 }
             }
+
             myLocation = location
+
+            /**
+             * Retrofit
+             */
+            retrofit?.create(ServiceHub::class.java)?.postLocation(
+                User(
+                    username = userName.text.toString(),
+                    latitude = extras?.get("latitude").toString().toDouble(),
+                    longitude = extras?.get("longitude").toString().toDouble(),
+                    accuracy = extras?.get("accuracy").toString().toDouble()
+                )
+            )?.enqueue(object : Callback<Any> {
+                override fun onResponse(call: Call<Any>, response: Response<Any>) {
+                    Log.d(Configuration.tag, "Response ${response.message()}")
+                }
+
+                override fun onFailure(call: Call<Any>, t: Throwable) {
+                    Log.e(Configuration.tag, t.message, t)
+                }
+            })
         }
     }
+
 }

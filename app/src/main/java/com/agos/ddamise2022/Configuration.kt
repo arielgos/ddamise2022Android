@@ -9,7 +9,8 @@ import com.agos.ddamise2022.extensions.toIntOrDefault
 class Configuration {
 
 
-    var environment: String = "s"
+    var environment: String = "debug"
+    var urlBase: String = ""
     var defaultZoom: Float = 0F
     var locationUpdateTime: Int = 0
     var locationUpdateDistance: Int = 0
@@ -29,6 +30,7 @@ class Configuration {
                         PackageManager.GET_META_DATA
                     ).metaData
                 env.environment = metaData["com.agos.ddamise2022.ENVIRONMENT"].toString()
+                env.urlBase = metaData["com.agos.ddamise2022.URLBASE"].toString()
                 env.defaultZoom = metaData["com.agos.ddamise2022.DEFAULTZOOM"].toString().toIntOrDefault().toFloat()
                 env.locationUpdateTime = metaData["com.agos.ddamise2022.LOCATIONUPDATETIME"].toString().toIntOrDefault()
                 env.locationUpdateDistance = metaData["com.agos.ddamise2022.LOCATIONUPDATEDISTANCE"].toString().toIntOrDefault()
