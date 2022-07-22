@@ -9,12 +9,23 @@ android {
 
     compileSdk 32
 
+    signingConfigs {
+        config {
+            keyAlias "agos"
+            keyPassword "spam.net"
+            storeFile file('/Users/agos/Sources/agos.jks')
+            storePassword 'spam.net'
+        }
+    }
+
     defaultConfig {
         applicationId "com.agos.ddamise2022"
         minSdk 21
         targetSdk 30
         versionCode 3
         versionName "1.3"
+
+        signingConfig signingConfigs.config
 
         /**
          * Custom Properties
@@ -39,6 +50,7 @@ android {
         release {
             minifyEnabled true
             debuggable = false
+            shrinkResources true
 
             manifestPlaceholders = [
                     "environment"           : "release",
