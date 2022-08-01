@@ -22,8 +22,8 @@ android {
         applicationId "com.agos.ddamise2022"
         minSdk 21
         targetSdk 30
-        versionCode 3
-        versionName "1.3"
+        versionCode 4
+        versionName "1.4"
 
         signingConfig signingConfigs.config
 
